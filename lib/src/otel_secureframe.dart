@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_secureframe_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_secureframe';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class SecureframeResult {
+  /// Creates a result.
   const SecureframeResult({
     this.companyId,
     this.framework,
@@ -81,8 +82,13 @@ class SecureframeResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class SecureframeCallResult<T> {
+  /// Creates a call result.
   const SecureframeCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final SecureframeResult? result;
 }
@@ -109,38 +115,38 @@ Future<T> tracedSecureframe<T>({
   final span = _tracer().startSpan(
     'secureframe $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.companyId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.company.id',
           r.result!.companyId!,
         ));
       }
       if (r.result!.framework != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.framework',
           r.result!.framework!,
         ));
       }
       if (r.result!.controlId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.control.id',
           r.result!.controlId!,
         ));
       }
       if (r.result!.testId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.test.id',
           r.result!.testId!,
         ));
       }
       if (r.result!.testStatus != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.test.status',
           r.result!.testStatus!,
         ));
@@ -149,73 +155,73 @@ Future<T> tracedSecureframe<T>({
         }
       }
       if (r.result!.assertion != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.test.assertion',
           r.result!.assertion!,
         ));
       }
       if (r.result!.entityKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.entity.kind',
           r.result!.entityKind!,
         ));
       }
       if (r.result!.entityId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.entity.id',
           r.result!.entityId!,
         ));
       }
       if (r.result!.severity != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.severity',
           r.result!.severity!,
         ));
       }
       if (r.result!.failingEntities != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'secureframe.failing.entities',
           r.result!.failingEntities!,
         ));
       }
       if (r.result!.passingEntities != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'secureframe.passing.entities',
           r.result!.passingEntities!,
         ));
       }
       if (r.result!.exceptedEntities != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'secureframe.excepted.entities',
           r.result!.exceptedEntities!,
         ));
       }
       if (r.result!.dueDateSec != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'secureframe.due_date_sec',
           r.result!.dueDateSec!,
         ));
       }
       if (r.result!.evidenceTaskId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.evidence_task.id',
           r.result!.evidenceTaskId!,
         ));
       }
       if (r.result!.vendorSlug != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.vendor.slug',
           r.result!.vendorSlug!,
         ));
       }
       if (r.result!.auditId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'secureframe.audit.id',
           r.result!.auditId!,
         ));
       }
       if (r.result!.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           r.result!.statusCode!,
         ));
@@ -226,13 +232,13 @@ Future<T> tracedSecureframe<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
