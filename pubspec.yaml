@@ -2,7 +2,7 @@ name: otel_secureframe
 description: >-
   OpenTelemetry instrumentation for secureframe by Dartastic.io. Adds standard
   OpenTelemetry observability to applications that use secureframe.
-version: 0.1.0
+version: 0.1.1-wip
 repository: https://github.com/dartastic/otel_secureframe
 homepage: https://dartastic.io
 
